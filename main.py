@@ -94,7 +94,7 @@ def parse_planets(system, resources):
 
 def parse_systems(sector, resources):
     for system in sector.findall('system'):
-        if system.find('eod') == 'Surveyed':
+        if system.get('eod') == 'Surveyed':
             resources = parse_planets(system, resources)
     return resources
 
