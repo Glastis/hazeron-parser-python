@@ -1,6 +1,6 @@
 from xml.etree.ElementTree import parse
 
-xml_filename = 'French Empire Star Map.xml'
+xml_filename = 'Star Map.xml'
 resources_to_check = [
     'Bolite',
     'Coal',
