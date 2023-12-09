@@ -1,6 +1,6 @@
 from xml.etree.ElementTree import parse
 
-xml_filename = 'Star Map.xml'
+xml_filename = 'French Empire Star Map.xml'
 resources_to_check = [
     'Bolite',
     'Coal',
@@ -107,11 +107,40 @@ def parse_galaxies(root, resources):
     for galaxy in root.findall('galaxy'):
         resources = parse_sectors(galaxy, resources)
     return resources
+
+def print_padded(text, length):
+    print(text + ' ' * (length - len(text)), end='')
+
+def resources_pretty_print(resources):
+    padding_normal = 21
+    padding_small = 10
+    padding_big = 30
+    print_padded('Name', padding_normal)
+    print_padded('Quality', padding_small)
+    print_padded('System', padding_normal)
+    print_padded('Planet', padding_big)
+    print_padded('Zone', padding_normal)
+    print_padded('Size', padding_normal)
+    print_padded('Type', padding_normal)
+    print_padded('Habitable', padding_small)
+    print()
+    for resource in resources:
+        print_padded(resource['name'], padding_normal)
+        print_padded(str(resource['quality']), padding_small)
+        print_padded(resource['system'], padding_normal)
+        print_padded(resource['planet'], padding_big)
+        print_padded(resource['zone'], padding_normal)
+        print_padded(resource['planet_size'], padding_normal)
+        print_padded(resource['planet_type'], padding_normal)
+        print_padded(str(resource['system_have_habitable']), padding_small)
+        print()
+
+
 def main():
     resources = prepare_resources_table()
     dom = parse(xml_filename)
     resources = parse_galaxies(dom.getroot(), resources)
-    print(resources)
+    resources_pretty_print(resources)
 
 
 if __name__ == '__main__':
