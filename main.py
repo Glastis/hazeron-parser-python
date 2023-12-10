@@ -1,7 +1,5 @@
 from xml.etree.ElementTree import parse
 
-xml_filename = 'Star Map.xml'
-
 resources_to_check = [
     'Bolite',
     'Coal',
@@ -28,6 +26,18 @@ resources_to_check = [
     'Ioplasma',
     'Plant Fiber'
 ]
+
+# script arguments:
+# -i input file name, eg. -i "Star Map.xml". Required.
+# -s systems to check, separated by comma, eg. -s "Alderaan,Coruscant". If not specified, all systems will be checked.
+args = None
+def parse_args():
+    import argparse
+    global args
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-i', '--input', help='input file name', required=True)
+    parser.add_argument('-s', '--systems', help='systems to check, separated by comma', required=False)
+    args = parser.parse_args()
 
 def prepare_resources_table():
     resources = []
@@ -96,7 +106,7 @@ def parse_planets(system, resources):
 
 def parse_systems(sector, resources):
     for system in sector.findall('system'):
-        if system.get('eod') == 'Surveyed':
+        if (args.systems is None or system.get('name') in args.systems.split(',')) and system.get('eod') == 'Surveyed':
             resources = parse_planets(system, resources)
     return resources
 
@@ -120,7 +130,6 @@ def resources_pretty_print_get_longest_name(resources, attribute_label, attribut
         if resource_len > longest_name:
             longest_name = resource_len
     return longest_name + padding
-
 
 def resources_pretty_print_element(text, resources, label, attribute_name, padding=4):
     padding = resources_pretty_print_get_longest_name(resources, label, attribute_name, padding)
@@ -147,10 +156,10 @@ def resources_pretty_print(resources):
         resources_pretty_print_element(resource['system_have_habitable'], resources, 'Habitable', 'system_have_habitable')
         print()
 
-
 def main():
+    parse_args()
     resources = prepare_resources_table()
-    dom = parse(xml_filename)
+    dom = parse(args.input)
     resources = parse_galaxies(dom.getroot(), resources)
     resources_pretty_print(resources)
 
