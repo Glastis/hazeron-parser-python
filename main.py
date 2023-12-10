@@ -24,12 +24,32 @@ resources_to_check = [
     'Flomentum',
     'Borexino Precipitate',
     'Ioplasma',
-    'Plant Fiber'
+    'Animal Carcass',
+    'Beans',
+    'Cheese',
+    'Eggs',
+    'Fertilizer',
+    'Fruit',
+    'Grain',
+    'Grapes',
+    'Herbs',
+    'Hops',
+    'Log',
+    'Milk',
+    'Nuts',
+    'Plant Fiber',
+    'Spices',
+    'Vegetable',
+    'Vegetation Density',
 ]
 
 # script arguments:
 # -i input file name, eg. -i "Star Map.xml". Required.
 # -s systems to check, separated by comma, eg. -s "Alderaan,Coruscant". If not specified, all systems will be checked.
+# --no-ring if specified, rings will be ignored.
+# --no-asteroid or --no-planetoid if specified, asteroids will be ignored.
+# --habitable if specified, only systems with habitable planets will be checked.
+
 args = None
 def parse_args():
     import argparse
@@ -37,7 +57,13 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('-i', '--input', help='input file name', required=True)
     parser.add_argument('-s', '--systems', help='systems to check, separated by comma', required=False)
+    parser.add_argument('--no-ring', help='if specified, rings will be ignored', action='store_true')
+    parser.add_argument('--no-asteroid', help='if specified, asteroids will be ignored, same as --no-planetoid', action='store_true')
+    parser.add_argument('--no-planetoid', help='if specified, planetoids will be ignored, same as --no-asteroid', action='store_true')
+    parser.add_argument('--habitable', help='if specified, only systems with habitable planets will be checked', action='store_true')
     args = parser.parse_args()
+    if args.no_planetoid:
+        args.no_asteroid = True
 
 def prepare_resources_table():
     resources = []
@@ -97,6 +123,8 @@ def parse_planets(system, resources):
     for planet in system.findall('planet'):
         zones_amount = planet_get_zones_amount(planet)
         type = planet.get('bodyType')
+        if (args.no_ring and type == 'Ring') or (args.no_asteroid and type == 'Planetoid') or (args.habitable and not does_system_have_habitable_planet(system)):
+            continue
         resources = parse_planet_part(system, planet, resources, 'geosphere', zones_amount)
         resources = parse_planet_part(system, planet, resources, 'atmosphere', 1)
         if type != 'Ring':
