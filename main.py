@@ -1,6 +1,7 @@
 from xml.etree.ElementTree import parse
 
-xml_filename = 'Star Map.xml'
+# xml_filename = 'Star Map.xml'
+xml_filename = 'French Empire Star Map.xml'
 resources_to_check = [
     'Bolite',
     'Coal',
@@ -24,7 +25,8 @@ resources_to_check = [
     'Viathol',
     'Flomentum',
     'Borexino Precipitate',
-    'Ioplasma'
+    'Ioplasma',
+    'Plant Fiber'
 ]
 
 def prepare_resources_table():
@@ -111,28 +113,34 @@ def parse_galaxies(root, resources):
 def print_padded(text, length):
     print(text + ' ' * (length - len(text)), end='')
 
+def resources_pretty_print_get_longest_name(resources, attribute_label, attribute_name, padding=4):
+    longest_name = len(attribute_label)
+    for resource in resources:
+        resource_len = len(str(resource[attribute_name]))
+        if resource_len > longest_name:
+            longest_name = resource_len
+    return longest_name + padding
+
+
 def resources_pretty_print(resources):
-    padding_normal = 21
-    padding_small = 10
-    padding_big = 30
-    print_padded('Name', padding_normal)
-    print_padded('Quality', padding_small)
-    print_padded('System', padding_normal)
-    print_padded('Planet', padding_big)
-    print_padded('Zone', padding_normal)
-    print_padded('Size', padding_normal)
-    print_padded('Type', padding_normal)
-    print_padded('Habitable', padding_small)
+    print_padded('Name', resources_pretty_print_get_longest_name(resources, 'Name', 'name'))
+    print_padded('Quality', resources_pretty_print_get_longest_name(resources, 'Quality', 'quality'))
+    print_padded('System', resources_pretty_print_get_longest_name(resources, 'System', 'system'))
+    print_padded('Planet', resources_pretty_print_get_longest_name(resources, 'Planet', 'planet'))
+    print_padded('Zone', resources_pretty_print_get_longest_name(resources, 'Zone', 'zone'))
+    print_padded('Size', resources_pretty_print_get_longest_name(resources, 'Size', 'planet_size'))
+    print_padded('Type', resources_pretty_print_get_longest_name(resources, 'Type', 'planet_type'))
+    print_padded('Habitable', resources_pretty_print_get_longest_name(resources, 'Habitable', 'system_have_habitable'))
     print()
     for resource in resources:
-        print_padded(resource['name'], padding_normal)
-        print_padded(str(resource['quality']), padding_small)
-        print_padded(resource['system'], padding_normal)
-        print_padded(resource['planet'], padding_big)
-        print_padded(resource['zone'], padding_normal)
-        print_padded(resource['planet_size'], padding_normal)
-        print_padded(resource['planet_type'], padding_normal)
-        print_padded(str(resource['system_have_habitable']), padding_small)
+        print_padded(resource['name'], resources_pretty_print_get_longest_name(resources, 'Name', 'name'))
+        print_padded(str(resource['quality']), resources_pretty_print_get_longest_name(resources, 'Quality', 'quality'))
+        print_padded(resource['system'], resources_pretty_print_get_longest_name(resources, 'System', 'system'))
+        print_padded(resource['planet'], resources_pretty_print_get_longest_name(resources, 'Planet', 'planet'))
+        print_padded(resource['zone'], resources_pretty_print_get_longest_name(resources, 'Zone', 'zone'))
+        print_padded(resource['planet_size'], resources_pretty_print_get_longest_name(resources, 'Size', 'planet_size'))
+        print_padded(resource['planet_type'], resources_pretty_print_get_longest_name(resources, 'Type', 'planet_type'))
+        print_padded(str(resource['system_have_habitable']), resources_pretty_print_get_longest_name(resources, 'Habitable', 'system_have_habitable'))
         print()
 
 
