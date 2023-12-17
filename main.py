@@ -74,7 +74,7 @@ def prepare_resources_table():
 def does_system_have_habitable_planet(system):
     for planet in system.findall('planet'):
         type = planet.get('bodyType')
-        if type == 'Titan' or type == 'Planet' and planet.find('zone') == 'Habitable Zone':
+        if (type == 'Titan' or type == 'Planet') and planet.get('zone') == 'Habitable Zone':
             return True
     return False
 
