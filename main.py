@@ -43,6 +43,9 @@ resources_to_check = [
     'Vegetation Density',
 ]
 
+
+systems_checked = 0
+
 # script arguments:
 # -i input file name, eg. -i "Star Map.xml". Required.
 # -s systems to check, separated by comma, eg. -s "Alderaan,Coruscant". If not specified, all systems will be checked.
@@ -133,9 +136,16 @@ def parse_planets(system, resources):
     return resources
 
 def parse_systems(sector, resources):
+    global systems_checked
+
     for system in sector.findall('system'):
         if (args.systems is None or system.get('name') in args.systems.split(',')) and system.get('eod') == 'Surveyed':
             resources = parse_planets(system, resources)
+            systems_checked += 1
+            if args.systems is not None and len(args.systems.split(',')) >= systems_checked:
+                resources_export_to_csv(resources)
+                resources_pretty_print(resources)
+                exit(0)
     return resources
 
 def parse_sectors(galaxy, resources):
@@ -184,11 +194,24 @@ def resources_pretty_print(resources):
         resources_pretty_print_element(resource['system_have_habitable'], resources, 'Habitable', 'system_have_habitable')
         print()
 
+
+def resources_export_to_csv(resources):
+    import csv
+    with open('resources.csv', 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile, delimiter=',')
+        writer.writerow(['Name', 'Quality', 'System', 'Planet', 'Zone', 'Size', 'Type', 'Habitable'])
+        for resource in resources:
+            writer.writerow([resource['name'], resource['quality'], resource['system'], resource['planet'], resource['zone'], resource['planet_size'], resource['planet_type'], resource['system_have_habitable']])
+
 def main():
+    global resources_to_check
+
     parse_args()
+    resources_to_check.sort()
     resources = prepare_resources_table()
     dom = parse(args.input)
     resources = parse_galaxies(dom.getroot(), resources)
+    resources_export_to_csv(resources)
     resources_pretty_print(resources)
 
 
